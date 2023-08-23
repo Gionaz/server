@@ -1,0 +1,20 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const index_1 = require("./index");
+const test = async () => {
+    const rsa = new index_1.Rsa();
+    const crypt = new index_1.Crypt();
+    const keypair = await rsa.generateKeyPair();
+    const keypair2 = await rsa.generateKeyPair();
+    console.log({ keypair, keypair2 });
+    const message = 'hello';
+    const signature = crypt.sign(keypair.privateKey, message);
+    console.log('signature', signature);
+    const encrypted = crypt.encrypt(keypair2.publicKey, message, signature);
+    console.log('encrypted', encrypted);
+    const decrypted = crypt.decrypt(keypair2.privateKey, encrypted);
+    console.log('decrypted', decrypted);
+    const verifyIfThisFromMyFriend = crypt.verify(keypair.publicKey, decrypted.signature, decrypted.message);
+    console.log('verifyIfThisFromMyFriend', verifyIfThisFromMyFriend);
+};
+test();

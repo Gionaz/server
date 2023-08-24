@@ -1,1 +1,0 @@
-export const  assets_url = 'https://node-assets.s3.amazonaws.com/static'

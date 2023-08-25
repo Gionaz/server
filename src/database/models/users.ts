@@ -35,6 +35,7 @@ UserSchema.pre("save", function (next) {
   const user = this;
   user.email = user.email.trim();
   user.userName = user.userName?.trim();
+  //user.password = user.password?.trim();
   // If the password hasn't been modified, move on
   if (!user.isModified("password")) {
     return next();

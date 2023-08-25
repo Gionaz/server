@@ -27,7 +27,6 @@ app.use('/', express.static(path.join(__dirname, process.env.env === 'dev' ? '..
 //checking server side connection
 
 app.post("/", (req, res) => {
-    console.log(req.body)
     try {
         (Controllers as any)[req.body.controller]({
             data: req.body,

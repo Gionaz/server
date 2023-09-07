@@ -4,14 +4,19 @@ import bcrypt from "bcryptjs";
 const UserSchema = new mongoose.Schema({
   password: { type: String },
   lastLogin: { type: Date, default: Date.now },
-  fullName: { type: String, required: true },
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
   userName: { type: String },
   isActive: { type: Boolean, default: false },
   dateJoined: { type: Date, default: Date.now },
   status: { type: String, default: "active" },
   email: { type: String, required: true },
   userVerified: Boolean,
-  mobile: String,
+  phone: String,
+  age:String,
+  zipcode: String,
+  interest: String,
+  confirmpass: String,
   jwtRefreshToken: String,
   devices: [
     {

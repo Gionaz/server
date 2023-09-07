@@ -1,7 +1,9 @@
 import Users from './users'
+import Chats from './chat'
 
 export default {
-    Users
+    Users,
+    Chats
 }
 
 

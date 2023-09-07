@@ -1,4 +1,5 @@
 import { find, save } from "../database";
+import { Api } from "../helper";
 
 export default ({
     data,
@@ -8,7 +9,7 @@ export default ({
 
     const { action } = data
     switch (action) {
-        case 'register':
+        case 'Sign Up':
             //check if in the database (email, or the username)
             find({
                 table: 'Users',
@@ -24,67 +25,60 @@ export default ({
                     userName: 1
                 }
             }).then((user: any) => {
-                // console.log({ user })
-                if (!user){
+                if (!user) {
                     save({
                         table: 'Users',
                         data: {
                             ...data,
                         }
                     }).then((user: any) => {
-                        res.status(201).json({ 
-                            status:'success', 
-                            message:  'User has been registered',
+                        res.status(201).json({
+                            status: 'success',
+                            message: 'User has been registered',
                             user
-                         })  
+                        })
                     })
                 }
                 else
-                    res.status(201).json({ 
-                status:'error', 
-                message: data.email === user.email ? 'The email is already registed.':'The username is not available.'
+                    res.status(201).json({
+                        status: 'error',
+                        message: data.email === user.email ? 'The email is already registed.' : 'The username is not available.',
+                        field: data.email === user.email ? 'email' : 'userName'
                     })
             })
             break;
 
-            case 'login':
-                // Check if the username or email exists in the database
+        case 'Sign In':
+            // Check if the username or email exists in the database
+            console.log(data)
             find({
                 table: 'Users',
                 qty: 'findOne',
                 query: {
                     $or: [
-                        { userName: data.userNameOrEmail },
-                        { email: data.userNameOrEmail }
+                        { userName: data.email },
+                        { email: data.email }
                     ]
-                },
-                project: {
-                    _id: 1,
-                    userName: 1,
-                    email: 1,
-                    password: 1
                 }
             }).then((user: any) => {
                 if (!user) {
-                    res.status(401).json({
+                    Api(res, {
                         status: 'error',
-                        message: 'Invalid credentials'
+                        message: 'Invalid credentials',
+                        field: 'email'
                     });
                 } else {
-                    if (user.validPassword(data.password, data.pass0)) {
-                        res.status(200).json({
+                    if (user.validPassword( data.password, user.password)) {
+                        Api(res, {
                             status: 'success',
                             message: 'Login successful',
-                            user: {
-                                _id: user._id,
-                                userName: user.userName,
-                                email: user.email
-                            }
+                            user
                         });
                     } else {
-                        res.status(401).json({
+                        Api(res, {
                             status: 'error',
-                            message: 'Invalid credentials'
+                            message: 'Invalid password',
+                            field: 'password'
                         });
                     }
                 }

@@ -1,49 +1,87 @@
 // @ts-ignore
-import SneaksAPI from 'sneaks-api';
-import lodash from 'lodash'
-import Products from '../database/models/products'
+import SneaksAPI from "sneaks-api";
+import lodash from "lodash";
+import Products from "../database/models/products";
+import { find } from "../database";
+import { Api } from "../helper";
 
 const sneaks = new SneaksAPI();
-export default ({
-    res,
-    data
-}: any) => {
-    const { action } = data
-    switch (action) {
-        case 'getSneakersData':
-            sneaks.getMostPopular(100, (err: any, products: any[]) => {
-                if (err)
-                    console.log("err")
-                else {
-                    const newArray = products.map(product => {
-                        let {
-                            shoeName, brand, styleID, silhoutte, make,
-                            colorway, retailPrice, thumbnail, releaseDate,
-                            description, imageLinks, urlKey, resellLinks,
-                            goatProductId, resellPrices
-                        } = product
-                        return {
-                            a: 'c',
-                            shoeName,
-                            styleID,
-                            brand,
-                            silhoutte,
-                            make,
-                            colorway, retailPrice, thumbnail, releaseDate,
-                            description, imageLinks, urlKey, resellLinks,
-                            goatProductId, resellPrices
-                        };
-                    });
-                    Products.insertMany(newArray).then((resp) => {
-                        console.log({ resp })
-                    }).catch((x) => {
-                        console.log(x)
-                    })
-                }
+export default ({ res, data }: any) => {
+  const { action } = data;
+  switch (action) {
+    case "getSneakersData":
+      sneaks.getMostPopular(100, (err: any, products: any[]) => {
+        if (err) console.log("err");
+        else {
+          const newArray = products.map((product) => {
+            let {
+              shoeName,
+              brand,
+              styleID,
+              silhoutte,
+              make,
+              colorway,
+              retailPrice,
+              thumbnail,
+              releaseDate,
+              description,
+              imageLinks,
+              urlKey,
+              resellLinks,
+              goatProductId,
+              resellPrices,
+            } = product;
+            return {
+              a: "c",
+              shoeName,
+              styleID,
+              brand,
+              silhoutte,
+              make,
+              colorway,
+              retailPrice,
+              thumbnail,
+              releaseDate,
+              description,
+              imageLinks,
+              urlKey,
+              resellLinks,
+              goatProductId,
+              resellPrices,
+            };
+          });
+          Products.insertMany(newArray)
+            .then((resp) => {
+              //   console.log({ resp });
             })
-            break;
+            .catch((x) => {
+              console.log(x);
+            });
+        }
+      });
+      break;
 
-        default:
-            break;
-    }
-}
+    case "getProductDetails":
+      console.log({ datax: data });
+      find({
+        table: "Products",
+        qty: "findOne",
+        query: { goatProductId: data.goatProductId.parseInt() },
+      })
+        .then((product) => {
+          console.log({ product });
+          // if(product && product.urlKey) => {
+          //     res.status(200).json({imageLink: product.urlKey});
+          // } else {
+          //     res.status(404).json({error: 'Product not found'})
+          // }
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+      break;
+
+    default:
+      break;
+  }
+};

@@ -66,15 +66,10 @@ export default ({ res, data }: any) => {
       find({
         table: "Products",
         qty: "findOne",
-        query: { goatProductId: data.goatProductId.parseInt() },
+        query: { goatProductId: parseInt(data.goatProductId) },
       })
-        .then((product) => {
-          console.log({ product });
-          // if(product && product.urlKey) => {
-          //     res.status(200).json({imageLink: product.urlKey});
-          // } else {
-          //     res.status(404).json({error: 'Product not found'})
-          // }
+        .then((product: any) => {
+          Api(res, product)
         })
         .catch((e) => {
           console.log(e);

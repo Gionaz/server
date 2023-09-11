@@ -2,6 +2,8 @@
 import SneaksAPI from 'sneaks-api';
 import lodash from 'lodash'
 import Products from '../database/models/products'
+import {Api} from '../helper'
+import {aggregate} from '../database'
 
 const sneaks = new SneaksAPI();
 export default ({
@@ -43,6 +45,20 @@ export default ({
             })
             break;
 
+            case "getProductsToSellData":
+                aggregate({
+                  table: "ProductsToSell",
+                  array:[
+                    {
+                      $sample:{size:3}
+                    }
+                  ]
+                }).then((products: any) => {
+                  console.log({data})
+                  Api(res, products);
+                });
+                break;
+            
         default:
             break;
     }

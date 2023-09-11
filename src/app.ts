@@ -30,6 +30,7 @@ app.use('/', express.static(path.join(__dirname, process.env.env === 'dev' ? '..
 //checking server side connection
 Sockets({ http, clients })
 app.post("/", (req, res) => {
+    console.log(req.body)
     try {
         (Controllers as any)[req.body.controller]({
             data: req.body,

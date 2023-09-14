@@ -74,7 +74,6 @@ export default ({ res, data }: any) => {
         Api(res, products);
       });
       break;
-
     case "addProducts":
       save({
         table: "products",
@@ -82,6 +81,19 @@ export default ({ res, data }: any) => {
       }).then((products: any) => {
         Api(res, products);
       });
+    case "getProductDetails":
+      console.log({ datax: data });
+      find({
+        table: "Products",
+        qty: "findOne",
+        query: { goatProductId: data.goatProductId },
+      })
+        .then((product: any) => {
+          Api(res, product)
+        })
+        .catch((e) => {
+          console.log(e);
+        });
       break;
 
     case "updateProduct":

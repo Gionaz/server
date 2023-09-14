@@ -1,5 +1,6 @@
 import { find, save, update } from "../database";
 import { Api } from "../helper";
+import Notifications from "../database/models/notifications";
 
 export default ({ data, res }: any) => {
   const { action } = data;
@@ -9,6 +10,14 @@ export default ({ data, res }: any) => {
         table: "orders",
         data: data.order,
       }).then((order: any) => {
+        const newNotification: any = new Notifications({
+            sender: data.userId,
+            message: "Your order has been placed successfully",
+            notificationType: "orderCreation"
+        })
+        newNotification.save().then((resp: any) => {
+            Api(res, resp)
+        })
         Api(res, order);
       });
       break;
@@ -24,6 +33,14 @@ export default ({ data, res }: any) => {
                 $set:data
             }
         }).then((resp: any) => {
+            const updateNotification: any = new Notifications({
+                sender: data.userId,
+                message: "Your order has been updated successfully",
+                notificationType: "orderUpdate"
+            })
+            updateNotification.save().then(() => {
+                Api(res, resp)
+            })
             Api(res, resp)
         })
         break

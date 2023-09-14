@@ -4,6 +4,7 @@ import Chats from "./chat";
 import products from "./products";
 import ProductsToSell from "./products_to_sell";
 import orders from "./orders";
+import Notifications from "./notifications";
 
 export default {
   Users,
@@ -11,5 +12,6 @@ export default {
   Chats,
   ProductsToSell,
   products,
-  orders
+  orders,
+  Notifications
 };

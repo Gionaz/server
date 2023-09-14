@@ -2,8 +2,9 @@
 import SneaksAPI from "sneaks-api";
 import lodash from "lodash";
 import Products from "../database/models/products";
-import { find } from "../database";
 import { Api } from "../helper";
+import { aggregate, find, save, update } from "../database";
+import products from "../database/models/products";
 
 const sneaks = new SneaksAPI();
 export default ({ res, data }: any) => {
@@ -52,7 +53,7 @@ export default ({ res, data }: any) => {
           });
           Products.insertMany(newArray)
             .then((resp) => {
-              //   console.log({ resp });
+              console.log({ resp });
             })
             .catch((x) => {
               console.log(x);
@@ -60,7 +61,26 @@ export default ({ res, data }: any) => {
         }
       });
       break;
-
+    case "getProductsToSellData":
+      aggregate({
+        table: "ProductsToSell",
+        array: [
+          {
+            $sample: { size: 3 },
+          },
+        ],
+      }).then((products: any) => {
+        //console.log({data})
+        Api(res, products);
+      });
+      break;
+    case "addProducts":
+      save({
+        table: "products",
+        data: data.products,
+      }).then((products: any) => {
+        Api(res, products);
+      });
     case "getProductDetails":
       console.log({ datax: data });
       find({
@@ -75,6 +95,23 @@ export default ({ res, data }: any) => {
           console.log(e);
         });
       break;
+
+    case "updateProduct":
+        console.log({data})
+        update({
+            table: "ProductsToSell",
+            qty: 'updateOne',
+            query: {
+                _id:data.productId
+            },
+            update:{
+                $set:data
+                
+            }
+        }).then((resp:any) => {
+            Api(res, resp)
+        })
+        break;
 
     default:
       break;

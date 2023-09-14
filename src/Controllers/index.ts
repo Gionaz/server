@@ -1,11 +1,11 @@
-import Users from "./users";
-import Chats from "./chat";
-import Products from "./products";
+import Users from './users'
+import Chats from './chat'
+import Products from './products'
+import Orders from './orders'
 
 export default {
-  Users,
-  Chats,
-  Products,
-};
-
-const x = { a: "y" };
+    Users,
+    Chats,
+    Products,
+    Orders
+}

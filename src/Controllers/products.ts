@@ -66,7 +66,7 @@ export default ({ res, data }: any) => {
       find({
         table: "Products",
         qty: "findOne",
-        query: { goatProductId: parseInt(data.goatProductId) },
+        query: { goatProductId: data.goatProductId },
       })
         .then((product: any) => {
           Api(res, product)

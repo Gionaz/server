@@ -10,4 +10,4 @@ const schema = new mongoose.Schema({
   createdAt: { type: Date, default: new Date() },
 });
 
-export default mongoose.model("ProductsToSell", schema);
+export default mongoose.model("products_to_sell", schema);

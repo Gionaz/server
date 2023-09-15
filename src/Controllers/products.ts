@@ -61,7 +61,7 @@ export default ({ res, data }: any) => {
         }
       });
       break;
-    case "getProductsToSellData":
+    case "getProductsOnSell":
       aggregate({
         table: "ProductsToSell",
         array: [
@@ -74,32 +74,42 @@ export default ({ res, data }: any) => {
         Api(res, products);
       });
       break;
-
-    case "addProducts":
+    case "addProduct":
       save({
-        table: "products",
-        data: data.products,
-      }).then((products: any) => {
-        Api(res, products);
+        table: "ProductsToSell",
+        data: data.product,
+      }).then((product: any) => {
+        Api(res, product);
       });
+    case "getProductDetails":
+      find({
+        table: "Products",
+        qty: "findOne",
+        query: { goatProductId: data.goatProductId },
+      })
+        .then((product: any) => {
+          Api(res, product)
+        })
+        .catch((e) => {
+          console.log(e);
+        });
       break;
 
     case "updateProduct":
-        console.log({data})
-        update({
-            table: "ProductsToSell",
-            qty: 'updateOne',
-            query: {
-                _id:data.productId
-            },
-            update:{
-                $set:data
-                
-            }
-        }).then((resp:any) => {
-            Api(res, resp)
-        })
-        break;
+      update({
+        table: "ProductsToSell",
+        qty: 'updateOne',
+        query: {
+          _id: data.productId
+        },
+        update: {
+          $set: data
+
+        }
+      }).then((resp: any) => {
+        Api(res, resp)
+      })
+      break;
 
     default:
       break;

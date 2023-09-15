@@ -39,12 +39,11 @@ app.post("/", (req, res) => {
  } catch (e) {
         res.status(400);
     }
-});
 
+});
 
 // Sockets({ http, clients });
 http.listen(port, () => {
     console.log(`App is running on port ${port}`);
     // onRun()
 });
-

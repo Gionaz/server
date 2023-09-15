@@ -9,7 +9,3 @@ export default {
     Products,
     Orders
 }
-
-
-const x = {a:'y'}
-

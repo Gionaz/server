@@ -13,6 +13,7 @@ import path from "path";
 import Controllers from './Controllers'
 import { onRun, socketBroadCast } from "./helper";
 import Sockets from './sockets'
+import { generateHex } from "./helper/auth";
 
 
 const port: number = parseInt(process.env.port as string);
@@ -35,8 +36,8 @@ app.post("/", (req, res) => {
         (Controllers as any)[req.body.controller]({
             data: req.body,
             res
-    })
- } catch (e) {
+        })
+    } catch (e) {
         res.status(400);
     }
 
@@ -46,4 +47,5 @@ app.post("/", (req, res) => {
 http.listen(port, () => {
     console.log(`App is running on port ${port}`);
     // onRun()
-});
+    // console.log(generateHex())
+})

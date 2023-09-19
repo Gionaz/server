@@ -8,6 +8,11 @@ const schema = new mongoose.Schema({
   matchProductId: Number,
   images: [String],
   createdAt: { type: Date, default: new Date() },
+  postedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  }
 });
 
 export default mongoose.model("products_to_sell", schema);

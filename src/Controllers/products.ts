@@ -77,7 +77,10 @@ export default ({ res, data }: any) => {
     case "addProduct":
       save({
         table: "ProductsToSell",
-        data: data.product,
+        data: {
+          ...data.product,
+          postedBy: data.userId
+        }
       }).then((product: any) => {
         Api(res, product);
       });

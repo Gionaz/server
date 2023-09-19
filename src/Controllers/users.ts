@@ -1,13 +1,15 @@
-import { find, save } from "../database";
+import { find, save, update } from "../database";
 import { Api } from "../helper";
+import { generateJwtToken } from "../helper/auth";
 
+const table = 'Users'
 export default ({ data, res }: any) => {
   const { action } = data;
   switch (action) {
     case "Sign Up":
       //check if in the database (email, or the username)
       find({
-        table: "Users",
+        table,
         qty: "findOne",
         query: {
           $or: [{ userName: data.userName }, { email: data.email }],
@@ -19,7 +21,7 @@ export default ({ data, res }: any) => {
       }).then((user: any) => {
         if (!user) {
           save({
-            table: "Users",
+            table,
             data: {
               ...data,
             },
@@ -46,7 +48,7 @@ export default ({ data, res }: any) => {
       // Check if the username or email exists in the database
       // console.log(data)
       find({
-        table: "Users",
+        table,
         qty: "findOne",
         query: {
           $or: [{ userName: data.email }, { email: data.email }],
@@ -60,11 +62,26 @@ export default ({ data, res }: any) => {
           });
         } else {
           if (user.validPassword(data.password, user.password)) {
-            Api(res, {
-              status: "success",
-              message: "Login successful",
-              user,
-            });
+            const jwtToken = generateJwtToken(user._id);
+            const jwtRefreshToken = generateJwtToken(
+              user._id + "refreshToken"
+            );
+            update({
+              table,
+              qty: "updateOne",
+              query: { _id: user._id },
+              update: { $set: { jwtRefreshToken, lastLogin: new Date() } },
+            })
+              .then(() => {
+                Api(res, {
+                  status: "success",
+                  User: user,
+                  jwtToken,
+                });
+              })
+              .catch((err) => {
+              });
+
           } else {
             Api(res, {
               status: "error",

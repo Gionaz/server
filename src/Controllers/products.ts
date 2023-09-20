@@ -1,14 +1,20 @@
 // @ts-ignore
 import SneaksAPI from "sneaks-api";
 import lodash from "lodash";
-import Products from "../database/models/products";
+import ProductsToSell from "../database/models/products_to_sell";
 import { Api } from "../helper";
 import { aggregate, find, save, update } from "../database";
-import products from "../database/models/products";
+import Products from "../database/models/products";
 
 const sneaks = new SneaksAPI();
 export default ({ res, data }: any) => {
   const { action } = data;
+  const peerProps = {
+    firstName: 1,
+    lastName: 1,
+    userName: 1,
+    image: 1
+  }
   switch (action) {
     case "getSneakersData":
       sneaks.getMostPopular(100, (err: any, products: any[]) => {
@@ -66,13 +72,36 @@ export default ({ res, data }: any) => {
         table: "ProductsToSell",
         array: [
           {
-            $sample: { size: 3 },
+            $sample: { size: 15 },
           },
+          {
+            $lookup:
+            {
+              from: "users",
+              let: { postedById: "$postedBy" },
+              pipeline: [
+                {
+                  $match:
+                  {
+                    $expr:
+                    {
+                      $eq: ["$_id", "$$postedById"]
+                    }
+                  }
+                },
+                { $project: peerProps }
+              ],
+              as: "postedBy"
+            }
+          },
+          {
+            $unwind:"$postedBy"
+          }
         ],
       }).then((products: any) => {
-        //console.log({data})
         Api(res, products);
       });
+
       break;
     case "addProduct":
       save({

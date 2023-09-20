@@ -76,10 +76,11 @@ export default ({ data, res }: any) => {
                 Api(res, {
                   status: "success",
                   User: user,
-                  jwtToken,
+                  jwtToken
                 });
               })
               .catch((err) => {
+
               });
 
           } else {

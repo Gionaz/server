@@ -11,9 +11,10 @@ const UserSchema = new mongoose.Schema({
   dateJoined: { type: Date, default: Date.now },
   status: { type: String, default: "active" },
   email: { type: String, required: true },
+  image: { type: String },
   userVerified: Boolean,
   phone: String,
-  age:String,
+  age: String,
   zipcode: String,
   interest: String,
   confirmpass: String,
@@ -72,5 +73,5 @@ export const generatePasswordHash = async (password: string) => {
   return hash;
 };
 
-export default mongoose.model("User", UserSchema);
+export default mongoose.model("users", UserSchema);
 //db.getCollection('users').createIndex({"email": 1}, {unique: true})

@@ -13,7 +13,7 @@ import path from "path";
 import Controllers from './Controllers'
 import { onRun, socketBroadCast } from "./helper";
 import Sockets from './sockets'
-import { generateHex } from "./helper/auth";
+import {  verifyJWT } from "./helper/auth";
 
 
 const port: number = parseInt(process.env.port as string);
@@ -27,7 +27,7 @@ app.use('/', express.static(path.join(__dirname, process.env.env === 'dev' ? '..
 
 //configure the JWT middleware
 
-// app.use(verifyJWT);
+app.use(verifyJWT);
 //checking server side connection
 Sockets({ http, clients })
 app.post("/", (req, res) => {

@@ -95,7 +95,7 @@ export default ({ res, data }: any) => {
             }
           },
           {
-            $unwind:"$postedBy"
+            $unwind: "$postedBy"
           }
         ],
       }).then((products: any) => {
@@ -111,8 +111,9 @@ export default ({ res, data }: any) => {
           postedBy: data.userId
         }
       }).then((product: any) => {
-        Api(res, product);
+        Api(res, { message: "Product has been added." });
       });
+      break;
     case "getProductDetails":
       find({
         table: "Products",

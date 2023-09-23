@@ -1,5 +1,5 @@
 import { find, save, update } from "../database";
-import { Api } from "../helper";
+import { Api, deleteS3BucketImage } from "../helper";
 import { generateJwtToken } from "../helper/auth";
 
 const table = 'Users'
@@ -102,6 +102,30 @@ export default ({ data, res }: any) => {
         secretAccessKey,
         region,
       });
+      break;
+    case 'updateUserImage':
+      update({
+        table,
+        qty: 'findOneAndUpdate',
+        query: {
+          _id: data.userId
+        },
+        update: {
+          $set: {
+            image: data.image
+          }
+        },
+        options: {
+          returnOriginal: true,
+          projection: { image: 1, _id: 0 }
+        }
+      }).then((user:any) => {
+        if(user.image)
+        deleteS3BucketImage(user.image)
+        //
+        Api(res, { status: "success", message: "Profile has been updated" })
+        //if remove profile image, delete the old one from AWS
+      })
       break;
     default:
       break;

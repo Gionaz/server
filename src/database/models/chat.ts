@@ -20,6 +20,10 @@ const schema = new mongoose.Schema({
     isRead: {
         type: Boolean,
         default: false
+    },
+    productId: {
+        type: mongoose.Types.ObjectId,
+        ref: 'chats'
     }
 })
- export default mongoose.model('chats', schema)
+export default mongoose.model('chats', schema)

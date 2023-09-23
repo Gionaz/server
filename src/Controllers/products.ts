@@ -7,13 +7,22 @@ import { aggregate, find, save, update } from "../database";
 import Products from "../database/models/products";
 
 const sneaks = new SneaksAPI();
+export const peerProps = {
+  firstName: 1,
+  lastName: 1,
+  userName: 1,
+  image: 1
+}
 export default ({ res, data }: any) => {
   const { action } = data;
-  const peerProps = {
-    firstName: 1,
-    lastName: 1,
-    userName: 1,
-    image: 1
+  
+  const matchProdProps = {
+    silhoutte: 1,
+    retailPrice: 1,
+    thumbnail: 1,
+    description: 1,
+    releaseDate: 1,
+    brand: 1
   }
   switch (action) {
     case "getSneakersData":
@@ -96,6 +105,45 @@ export default ({ res, data }: any) => {
           },
           {
             $unwind: "$postedBy"
+          },
+          {
+            $lookup: {
+              from: "products",
+              let: { matchProductId: "$productNumber" },
+              pipeline: [
+                {
+                  $sort: {
+                    createdAt: -1
+                  }
+                },
+                {
+                  $match: {
+                    $expr: {
+                      $and: [
+                        { $eq: [{ $ifNull: ["$goatProductId", ""] }, "$$matchProductId"] },
+                        { $ne: [{ $ifNull: ["$goatProductId", ""] }, ""] }
+                      ]
+                    }
+                  }
+                },
+                {
+                  $limit: 1
+                },
+                { $project: matchProdProps }
+              ],
+              as: "matchProduct"
+            }
+          },
+          {
+            $unwind: {
+              path: "$matchProduct",
+              preserveNullAndEmptyArrays: true
+            }
+          },
+          {
+            $addFields: {
+              matchProduct: { $ifNull: ["$matchProduct", {}] }
+            }
           }
         ],
       }).then((products: any) => {

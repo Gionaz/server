@@ -5,7 +5,6 @@ const schema = new mongoose.Schema({
   title: String,
   price: Number,
   description: String,
-  matchProductId: Number,
   images: [String],
   createdAt: { type: Date, default: new Date() },
   postedBy: {

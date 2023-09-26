@@ -1,5 +1,5 @@
 import Mongoose from "mongoose"
-import { aggregate, find, save } from "../database"
+import { aggregate, find, save, update } from "../database"
 import { Api, socketBroadCast } from "../helper"
 import { matchProdProps, peerProps, productProps } from "./products"
 
@@ -20,6 +20,17 @@ export default ({
             })
             break;
         case 'getMessages':
+            console.log({ data })
+            update({
+                table: "Chats",
+                qty: 'updateOne',
+                query: { from: data.peerId },
+                update: { $set: { isRead: true } }
+
+            }).then((resp) => {
+                console.log({ resp })
+                // Api(res, {message:'message read'})
+            })
             find({
                 table: 'Chats',
                 qty: 'find',

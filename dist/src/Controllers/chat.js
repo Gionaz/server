@@ -19,6 +19,16 @@ exports.default = ({ data, res, clients }) => {
             });
             break;
         case 'getMessages':
+            console.log({ data });
+            (0, database_1.update)({
+                table: "Chats",
+                qty: 'updateOne',
+                query: { from: data.peerId },
+                update: { $set: { isRead: true } }
+            }).then((resp) => {
+                console.log({ resp });
+                // Api(res, {message:'message read'})
+            });
             (0, database_1.find)({
                 table: 'Chats',
                 qty: 'find',

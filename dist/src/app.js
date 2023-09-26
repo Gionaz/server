@@ -18,18 +18,17 @@ const path_1 = __importDefault(require("path"));
 const Controllers_1 = __importDefault(require("./Controllers"));
 const sockets_1 = __importDefault(require("./sockets"));
 const auth_1 = require("./helper/auth");
+process.env.AWS_SDK_JS_SUPPRESS_MAINTENANCE_MODE_MESSAGE = '1';
 const port = parseInt(process.env.port);
 const app = (0, express_1.default)(), clients = new clients_1.default(), http = new http_1.default.Server(app);
 app.use((0, cors_1.default)());
 app.use(body_parser_1.default.json({ limit: "50mb" }));
 app.use(body_parser_1.default.urlencoded({ extended: true, limit: "50mb" }));
 app.use('/', express_1.default.static(path_1.default.join(__dirname, process.env.env === 'dev' ? '../dist/public' : '../public')));
-//configure the JWT middleware
 app.use(auth_1.verifyJWT);
 //checking server side connection
 (0, sockets_1.default)({ http, clients });
 app.post("/", (req, res) => {
-    console.log(req.body);
     try {
         Controllers_1.default[req.body.controller]({
             data: req.body,

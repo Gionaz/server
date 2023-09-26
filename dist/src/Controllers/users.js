@@ -6,6 +6,25 @@ const auth_1 = require("../helper/auth");
 const table = 'Users';
 exports.default = ({ data, res }) => {
     const { action } = data;
+    const updateUserLogin = (user) => {
+        const jwtToken = (0, auth_1.generateJwtToken)(user._id);
+        const jwtRefreshToken = (0, auth_1.generateJwtToken)(user._id + "refreshToken");
+        (0, database_1.update)({
+            table,
+            qty: "updateOne",
+            query: { _id: user._id },
+            update: { $set: { jwtRefreshToken, lastLogin: new Date() } },
+        })
+            .then(() => {
+            (0, helper_1.Api)(res, {
+                status: "success",
+                User: user,
+                jwtToken
+            });
+        })
+            .catch((err) => {
+        });
+    };
     switch (action) {
         case "Sign Up":
             //check if in the database (email, or the username)
@@ -25,11 +44,7 @@ exports.default = ({ data, res }) => {
                         table,
                         data: Object.assign({}, data),
                     }).then((user) => {
-                        res.status(201).json({
-                            status: "success",
-                            message: "User has been registered",
-                            user,
-                        });
+                        updateUserLogin(user);
                     });
                 }
                 else
@@ -43,8 +58,6 @@ exports.default = ({ data, res }) => {
             });
             break;
         case "Sign In":
-            // Check if the username or email exists in the database
-            // console.log(data)
             (0, database_1.find)({
                 table,
                 qty: "findOne",
@@ -61,23 +74,7 @@ exports.default = ({ data, res }) => {
                 }
                 else {
                     if (user.validPassword(data.password, user.password)) {
-                        const jwtToken = (0, auth_1.generateJwtToken)(user._id);
-                        const jwtRefreshToken = (0, auth_1.generateJwtToken)(user._id + "refreshToken");
-                        (0, database_1.update)({
-                            table,
-                            qty: "updateOne",
-                            query: { _id: user._id },
-                            update: { $set: { jwtRefreshToken, lastLogin: new Date() } },
-                        })
-                            .then(() => {
-                            (0, helper_1.Api)(res, {
-                                status: "success",
-                                User: user,
-                                jwtToken
-                            });
-                        })
-                            .catch((err) => {
-                        });
+                        updateUserLogin(user);
                     }
                     else {
                         (0, helper_1.Api)(res, {

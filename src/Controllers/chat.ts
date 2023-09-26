@@ -1,7 +1,7 @@
 import Mongoose from "mongoose"
 import { aggregate, find, save } from "../database"
 import { Api, socketBroadCast } from "../helper"
-import { peerProps } from "./products"
+import { matchProdProps, peerProps, productProps } from "./products"
 
 export default ({
     data,
@@ -47,8 +47,8 @@ export default ({
                         }
                     },
                     {
-                        $sort:{
-                            date:-1
+                        $sort: {
+                            date: -1
                         }
                     },
                     {
@@ -105,17 +105,78 @@ export default ({
                         $unwind: "$peer"
                     },
                     {
+                        $lookup: {
+                            from: 'products_to_sells',
+                            let: { productId: "$latestMessage.productId" },
+                            pipeline: [
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $eq: ["$_id", "$$productId"]
+                                        }
+                                    }
+                                },
+                                {
+                                    $project: productProps
+                                }
+                            ],
+                            as: 'product',
+                        }
+                    },
+                    {
+                        $unwind: "$product"
+                    },
+                    {
+                        $lookup: {
+                            from: "products",
+                            let: { matchProductId: "$product.productNumber" },
+                            pipeline: [
+                                {
+                                    $sort: {
+                                        createdAt: -1
+                                    }
+                                },
+                                {
+                                    $match: {
+                                        $expr: {
+                                            $and: [
+                                                { $eq: [{ $ifNull: ["$goatProductId", ""] }, "$$matchProductId"] },
+                                                { $ne: [{ $ifNull: ["$goatProductId", ""] }, ""] }
+                                            ]
+                                        }
+                                    }
+                                },
+                                {
+                                    $limit: 1
+                                },
+                                { $project: matchProdProps }
+                            ],
+                            as: "matchProduct"
+                        }
+                    },
+                    {
+                        $unwind: {
+                            path: "$matchProduct",
+                            preserveNullAndEmptyArrays: true
+                        }
+                    },
+                    {
+                        $addFields: {
+                            matchProduct: { $ifNull: ["$matchProduct", {}] }
+                        }
+                    },
+                    {
                         $project: {
                             _id: 0
                         }
                     },
                     {
-                        $sort:{
-                            'latestMessage.date':-1
+                        $sort: {
+                            'latestMessage.date': -1
                         }
                     }
                 ]
-            }).then((chats) => {
+            }).then((chats: any) => {
                 Api(res, chats)
             }).catch(() => {
 

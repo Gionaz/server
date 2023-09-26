@@ -16,6 +16,7 @@ const http_1 = __importDefault(require("http"));
 // import Modules from "./modules";
 const path_1 = __importDefault(require("path"));
 const Controllers_1 = __importDefault(require("./Controllers"));
+const helper_1 = require("./helper");
 const sockets_1 = __importDefault(require("./sockets"));
 const auth_1 = require("./helper/auth");
 process.env.AWS_SDK_JS_SUPPRESS_MAINTENANCE_MODE_MESSAGE = '1';
@@ -42,6 +43,7 @@ app.post("/", (req, res) => {
 // Sockets({ http, clients });
 http.listen(port, () => {
     console.log(`App is running on port ${port}`);
-    // onRun()
+    if (process.env.env === 'prod')
+        (0, helper_1.onRun)();
     // console.log(generateHex())
 });

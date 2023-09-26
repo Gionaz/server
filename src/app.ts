@@ -13,7 +13,7 @@ import path from "path";
 import Controllers from './Controllers'
 import { onRun, socketBroadCast } from "./helper";
 import Sockets from './sockets'
-import {  verifyJWT } from "./helper/auth";
+import { verifyJWT } from "./helper/auth";
 process.env.AWS_SDK_JS_SUPPRESS_MAINTENANCE_MODE_MESSAGE = '1';
 
 const port: number = parseInt(process.env.port as string);
@@ -45,6 +45,7 @@ app.post("/", (req, res) => {
 // Sockets({ http, clients });
 http.listen(port, () => {
     console.log(`App is running on port ${port}`);
-    // onRun()
+    if (process.env.env === 'prod')
+        onRun()
     // console.log(generateHex())
 })

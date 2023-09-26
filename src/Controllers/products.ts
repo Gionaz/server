@@ -14,24 +14,24 @@ export const peerProps = {
   image: 1
 },
   matchProdProps = {
-    silhoutte: 1,
-    retailPrice: 1,
-    thumbnail: 1,
-    description: 1,
-    releaseDate: 1,
-    brand: 1
-  },
-  productProps = {
-    productNumber: 1,
-    title: 1,
-    price: 1,
-    description: 1,
-    images: 1
-  }
+  silhoutte: 1,
+  retailPrice: 1,
+  thumbnail: 1,
+  description: 1,
+  releaseDate: 1,
+  brand: 1
+},
+productProps = {
+  productNumber: 1,
+  title: 1,
+  price: 1,
+  description: 1,
+  images: 1
+}
 export default ({ res, data }: any) => {
   const { action } = data;
-
-
+  
+  
   switch (action) {
     case "getSneakersData":
       sneaks.getMostPopular(100, (err: any, products: any[]) => {

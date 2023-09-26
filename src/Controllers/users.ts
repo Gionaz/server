@@ -1,10 +1,33 @@
 import { find, save, update } from "../database";
 import { Api, deleteS3BucketImage } from "../helper";
 import { generateJwtToken } from "../helper/auth";
+import { UserProps } from "../types/types";
 
 const table = 'Users'
 export default ({ data, res }: any) => {
   const { action } = data;
+  const updateUserLogin = (user: UserProps) => {
+    const jwtToken = generateJwtToken(user._id);
+    const jwtRefreshToken = generateJwtToken(
+      user._id + "refreshToken"
+    );
+    update({
+      table,
+      qty: "updateOne",
+      query: { _id: user._id },
+      update: { $set: { jwtRefreshToken, lastLogin: new Date() } },
+    })
+      .then(() => {
+        Api(res, {
+          status: "success",
+          User: user,
+          jwtToken
+        });
+      })
+      .catch((err) => {
+
+      });
+  }
   switch (action) {
     case "Sign Up":
       //check if in the database (email, or the username)
@@ -26,11 +49,7 @@ export default ({ data, res }: any) => {
               ...data,
             },
           }).then((user: any) => {
-            res.status(201).json({
-              status: "success",
-              message: "User has been registered",
-              user,
-            });
+            updateUserLogin(user)
           });
         } else
           res.status(201).json({
@@ -45,8 +64,6 @@ export default ({ data, res }: any) => {
       break;
 
     case "Sign In":
-      // Check if the username or email exists in the database
-      // console.log(data)
       find({
         table,
         qty: "findOne",
@@ -62,26 +79,8 @@ export default ({ data, res }: any) => {
           });
         } else {
           if (user.validPassword(data.password, user.password)) {
-            const jwtToken = generateJwtToken(user._id);
-            const jwtRefreshToken = generateJwtToken(
-              user._id + "refreshToken"
-            );
-            update({
-              table,
-              qty: "updateOne",
-              query: { _id: user._id },
-              update: { $set: { jwtRefreshToken, lastLogin: new Date() } },
-            })
-              .then(() => {
-                Api(res, {
-                  status: "success",
-                  User: user,
-                  jwtToken
-                });
-              })
-              .catch((err) => {
+            updateUserLogin(user)
 
-              });
 
           } else {
             Api(res, {
@@ -119,9 +118,9 @@ export default ({ data, res }: any) => {
           returnOriginal: true,
           projection: { image: 1, _id: 0 }
         }
-      }).then((user:any) => {
-        if(user.image)
-        deleteS3BucketImage(user.image)
+      }).then((user: any) => {
+        if (user.image)
+          deleteS3BucketImage(user.image)
         //
         Api(res, { status: "success", message: "Profile has been updated" })
         //if remove profile image, delete the old one from AWS

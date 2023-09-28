@@ -14,24 +14,24 @@ export const peerProps = {
   image: 1
 },
   matchProdProps = {
-  silhoutte: 1,
-  retailPrice: 1,
-  thumbnail: 1,
-  description: 1,
-  releaseDate: 1,
-  brand: 1
-},
-productProps = {
-  productNumber: 1,
-  title: 1,
-  price: 1,
-  description: 1,
-  images: 1
-}
+    silhoutte: 1,
+    retailPrice: 1,
+    thumbnail: 1,
+    description: 1,
+    releaseDate: 1,
+    brand: 1
+  },
+  productProps = {
+    productNumber: 1,
+    title: 1,
+    price: 1,
+    description: 1,
+    images: 1
+  }
 export default ({ res, data }: any) => {
   const { action } = data;
-  
-  
+
+
   switch (action) {
     case "getSneakersData":
       sneaks.getMostPopular(100, (err: any, products: any[]) => {
@@ -199,7 +199,21 @@ export default ({ res, data }: any) => {
         Api(res, resp)
       })
       break;
-
+    case 'searchProduct':
+      console.log(data)
+      find({
+        table: 'Products',
+        qty: 'find',
+        query: {
+          silhoutte: { $regex: data.text }
+        },
+        project: matchProdProps,
+        sort: { _id: -1 },
+        limit: 5
+      }).then((products) => {
+        Api(res, products)
+      })
+      break;
     default:
       break;
   }

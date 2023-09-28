@@ -20,30 +20,31 @@ export default ({
             })
             break;
         case 'getMessages':
-            console.log({ data })
             update({
                 table: "Chats",
-                qty: 'updateOne',
-                query: { from: data.peerId },
-                update: { $set: { isRead: true } }
-
-            }).then((resp) => {
-                console.log({ resp })
-                // Api(res, {message:'message read'})
-            })
-            find({
-                table: 'Chats',
-                qty: 'find',
+                qty: 'updateMany',
                 query: {
                     productId: data.productId,
-                    $or: [
-                        { from: data.userId, to: data.peerId },
-                        { from: data.peerId, to: data.userId }
-                    ]
-                }
-            }).then((messages) => {
-                Api(res, messages)
+                    from: data.peerId,
+                    to: data.userId
+                },
+                update: { $set: { isRead: true } }
+            }).then((resp) => {
+                find({
+                    table: 'Chats',
+                    qty: 'find',
+                    query: {
+                        productId: data.productId,
+                        $or: [
+                            { from: data.userId, to: data.peerId },
+                            { from: data.peerId, to: data.userId }
+                        ]
+                    }
+                }).then((messages) => {
+                    Api(res, messages)
+                })
             })
+
             break;
         case 'getChats':
             aggregate({

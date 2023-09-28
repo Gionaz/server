@@ -199,7 +199,21 @@ export default ({ res, data }: any) => {
         Api(res, resp)
       })
       break;
-
+    case 'searchProduct':
+      console.log(data)
+      find({
+        table: 'Products',
+        qty: 'find',
+        query: {
+          silhoutte: { $regex: data.text }
+        },
+        project: matchProdProps,
+        sort: { _id: -1 },
+        limit: 5
+      }).then((products) => {
+        Api(res, products)
+      })
+      break;
     default:
       break;
   }

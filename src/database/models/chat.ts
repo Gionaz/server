@@ -3,11 +3,11 @@ import mongoose from 'mongoose'
 const schema = new mongoose.Schema({
     from: {
         type: mongoose.Types.ObjectId,
-        ref: 'User'
+        ref: 'users'
     },
     to: {
         type: mongoose.Types.ObjectId,
-        ref: 'User'
+        ref: 'users'
     },
     text: {
         type: String,
@@ -23,7 +23,7 @@ const schema = new mongoose.Schema({
     },
     productId: {
         type: mongoose.Types.ObjectId,
-        ref: 'chats'
+        ref: 'products'
     }
 })
 export default mongoose.model('chats', schema)

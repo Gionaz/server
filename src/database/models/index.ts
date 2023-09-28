@@ -5,6 +5,7 @@ import Products from "./products";
 import ProductsToSell from "./products_to_sell";
 import Orders from "./orders";
 import Notifications from "./notifications";
+import Stash from "./stash"
 
 export default {
   Users,
@@ -13,5 +14,6 @@ export default {
   ProductsToSell,
   Products,
   Orders,
-  Notifications
+  Notifications,
+  Stash,
 };

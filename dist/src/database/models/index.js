@@ -10,6 +10,7 @@ const products_1 = __importDefault(require("./products"));
 const products_to_sell_1 = __importDefault(require("./products_to_sell"));
 const orders_1 = __importDefault(require("./orders"));
 const notifications_1 = __importDefault(require("./notifications"));
+const stash_1 = __importDefault(require("./stash"));
 exports.default = {
     Users: users_1.default,
     Activations: activations_1.default,
@@ -17,5 +18,6 @@ exports.default = {
     ProductsToSell: products_to_sell_1.default,
     Products: products_1.default,
     Orders: orders_1.default,
-    Notifications: notifications_1.default
+    Notifications: notifications_1.default,
+    Stash: stash_1.default,
 };

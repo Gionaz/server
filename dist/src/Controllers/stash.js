@@ -1,26 +1,30 @@
-import { aggregate, find, save } from "../database"
-import { Api } from "../helper"
-import mongoose from 'mongoose'
-import { matchProdProps } from "./products"
-const table = 'Stash'
-export default ({ res, data }: any) => {
-    const { action } = data
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const database_1 = require("../database");
+const helper_1 = require("../helper");
+const mongoose_1 = __importDefault(require("mongoose"));
+const table = 'Stash';
+exports.default = ({ res, data }) => {
+    const { action } = data;
     switch (action) {
         case 'addStash':
-            save({
+            (0, database_1.save)({
                 table: 'Stash',
                 data
-            }).then((stash: any) => {
-                Api(res, { message: "Stash added successfully" })
-            })
+            }).then((stash) => {
+                (0, helper_1.Api)(res, { message: "Stash added successfully" });
+            });
             break;
         case 'getItems':
-            aggregate({
+            (0, database_1.aggregate)({
                 table,
                 array: [
                     {
                         $match: {
-                            userId: new mongoose.Types.ObjectId(data.userId)
+                            userId: new mongoose_1.default.Types.ObjectId(data.userId)
                         }
                     },
                     {
@@ -38,8 +42,8 @@ export default ({ res, data }: any) => {
                                 },
                                 {
                                     $project: {
-                                        silhoutte:1,
-                                        thumbnail:1
+                                        silhoutte: 1,
+                                        thumbnail: 1
                                     }
                                 }
                             ]
@@ -49,15 +53,14 @@ export default ({ res, data }: any) => {
                         $unwind: "$product"
                     },
                     {
-                        $project:{
-                            productId:0
+                        $project: {
+                            productId: 0
                         }
                     }
                 ]
-            }).then((items: any) => {
-                Api(res, items)
-            })
+            }).then((items) => {
+                (0, helper_1.Api)(res, items);
+            });
             break;
     }
-
-}
+};

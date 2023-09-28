@@ -7,11 +7,11 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const schema = new mongoose_1.default.Schema({
     from: {
         type: mongoose_1.default.Types.ObjectId,
-        ref: 'User'
+        ref: 'users'
     },
     to: {
         type: mongoose_1.default.Types.ObjectId,
-        ref: 'User'
+        ref: 'users'
     },
     text: {
         type: String,
@@ -27,7 +27,7 @@ const schema = new mongoose_1.default.Schema({
     },
     productId: {
         type: mongoose_1.default.Types.ObjectId,
-        ref: 'chats'
+        ref: 'products'
     }
 });
 exports.default = mongoose_1.default.model('chats', schema);

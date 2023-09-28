@@ -28,10 +28,9 @@ export const peerProps = {
     description: 1,
     images: 1
   }
+const table = "Products"
 export default ({ res, data }: any) => {
   const { action } = data;
-
-
   switch (action) {
     case "getSneakersData":
       sneaks.getMostPopular(100, (err: any, products: any[]) => {
@@ -200,19 +199,44 @@ export default ({ res, data }: any) => {
       })
       break;
     case 'searchProduct':
-      console.log(data)
-      find({
-        table: 'Products',
-        qty: 'find',
-        query: {
-          silhoutte: { $regex: data.text }
-        },
-        project: matchProdProps,
-        sort: { _id: -1 },
-        limit: 5
+      aggregate({
+        table,
+        array: [
+          {
+            $project: matchProdProps,
+          },
+          {
+            $match: {
+              silhoutte: { $regex: data.text, $options: 'i' }
+            }
+          },
+          {
+            $sort: {
+              _id: -1
+            }
+          },
+          {
+            $group: {
+              _id: "$silhoutte",
+              array: { $first: "$$ROOT" },
+            }
+          },
+          {
+            $limit: 30
+          },
+          {
+            $unwind: '$array',
+          },
+          {
+            $replaceRoot: {
+              newRoot: '$array',
+            },
+          },
+        ]
       }).then((products) => {
         Api(res, products)
       })
+
       break;
     default:
       break;

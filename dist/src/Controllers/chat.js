@@ -19,28 +19,29 @@ exports.default = ({ data, res, clients }) => {
             });
             break;
         case 'getMessages':
-            console.log({ data });
             (0, database_1.update)({
                 table: "Chats",
-                qty: 'updateOne',
-                query: { from: data.peerId },
-                update: { $set: { isRead: true } }
-            }).then((resp) => {
-                console.log({ resp });
-                // Api(res, {message:'message read'})
-            });
-            (0, database_1.find)({
-                table: 'Chats',
-                qty: 'find',
+                qty: 'updateMany',
                 query: {
                     productId: data.productId,
-                    $or: [
-                        { from: data.userId, to: data.peerId },
-                        { from: data.peerId, to: data.userId }
-                    ]
-                }
-            }).then((messages) => {
-                (0, helper_1.Api)(res, messages);
+                    from: data.peerId,
+                    to: data.userId
+                },
+                update: { $set: { isRead: true } }
+            }).then((resp) => {
+                (0, database_1.find)({
+                    table: 'Chats',
+                    qty: 'find',
+                    query: {
+                        productId: data.productId,
+                        $or: [
+                            { from: data.userId, to: data.peerId },
+                            { from: data.peerId, to: data.userId }
+                        ]
+                    }
+                }).then((messages) => {
+                    (0, helper_1.Api)(res, messages);
+                });
             });
             break;
         case 'getChats':

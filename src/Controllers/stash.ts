@@ -1,8 +1,16 @@
-import { aggregate, find, save } from "../database"
+import { aggregate, find, save, remove } from "../database"
 import { Api } from "../helper"
 import mongoose from 'mongoose'
 import { matchProdProps } from "./products"
 const table = 'Stash'
+
+/*export const stashItemProps = {
+    silhoutte: 0,
+    quantity: 0,
+    size: 0,
+    price: 0,
+}*/
+
 export default ({ res, data }: any) => {
     const { action } = data
     console.log(data)
@@ -59,6 +67,22 @@ export default ({ res, data }: any) => {
                 Api(res, items)
             })
             break;
+        case "deleteStashItem":
+            console.log({data})
+            remove({
+                table: 'Stash',
+                qty: 'findOneAndDelete',
+                query: {
+                    _id: data._Id
+                },
+                project: data
+            }).then((deletedData)=>{
+                console.log({deletedData})
+                Api(res, deletedData)
+            })
+            break;
+            default:
+                break;                                              
     }
 
 }

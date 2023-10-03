@@ -174,6 +174,21 @@ exports.default = ({ res, data }) => {
                 (0, helper_1.Api)(res, resp);
             });
             break;
+        case 'searchProduct':
+            console.log(data);
+            (0, database_1.find)({
+                table: 'Products',
+                qty: 'find',
+                query: {
+                    silhoutte: { $regex: data.text }
+                },
+                project: exports.matchProdProps,
+                sort: { _id: -1 },
+                limit: 5
+            }).then((products) => {
+                (0, helper_1.Api)(res, products);
+            });
+            break;
         default:
             break;
     }

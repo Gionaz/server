@@ -1,18 +1,75 @@
-import { aggregate, find, save } from "../database"
+import { aggregate, find, remove, save, update } from "../database"
 import { Api } from "../helper"
 import mongoose from 'mongoose'
 import { matchProdProps } from "./products"
 const table = 'Stash'
-export default ({ res, data }: any) => {
+export default async ({ res, data }: any) => {
     const { action } = data
     switch (action) {
         case 'addStash':
-            save({
-                table: 'Stash',
-                data
-            }).then((stash: any) => {
-                Api(res, { message: "Stash added successfully" })
+            console.log(data)
+            const similarStashItem: any = await find({
+                table,
+                qty: 'findOne',
+                query: {
+                    productId: data.productId,
+                    userId: data.userId
+                }
             })
+            const item = {
+                size: data.size,
+                quantity: data.quantity,
+                price: data.price
+            }
+            if (!similarStashItem)
+                save({
+                    table,
+                    data: {
+                        ...data,
+                        items: [
+                            item
+                        ]
+                    }
+                }).then(() => {
+                    Api(res, { message: "Stash added successfully" })
+                })
+            else if (similarStashItem.items.map((a: any) => a.size).includes(data.size) && !data.update)
+                Api(res, {
+                    error: {
+                        field: 'size',
+                        value: "Product of the same size already added."
+                    }
+                })
+            else
+                update({
+                    table,
+                    qty: 'updateOne',
+                    query: data.update ? {
+                        productId: data.productId,
+                        userId: data.userId,
+                        items: {
+                            $elemMatch: {
+                                size: data.size
+                            }
+                        }
+                    } :
+                        {
+                            productId: data.productId,
+                            userId: data.userId
+                        },
+                    update: data.update ? {
+                        $set: {
+                            'items.$': item
+                        }
+                    } : {
+                        $push: {
+                            items: item
+                        }
+                    }
+                }).then(() => {
+                    Api(res, { message: "Stash added successfully" })
+                })
+
             break;
         case 'getItems':
             aggregate({
@@ -20,7 +77,10 @@ export default ({ res, data }: any) => {
                 array: [
                     {
                         $match: {
-                            userId: new mongoose.Types.ObjectId(data.userId)
+                            userId: new mongoose.Types.ObjectId(data.userId),
+                            $expr: {
+                                $gt: [{ $size: "$items" }, 0]  // Check if the size of "items" array is greater than 0
+                            }
                         }
                     },
                     {
@@ -38,8 +98,8 @@ export default ({ res, data }: any) => {
                                 },
                                 {
                                     $project: {
-                                        silhoutte:1,
-                                        thumbnail:1
+                                        silhoutte: 1,
+                                        thumbnail: 1
                                     }
                                 }
                             ]
@@ -49,8 +109,8 @@ export default ({ res, data }: any) => {
                         $unwind: "$product"
                     },
                     {
-                        $project:{
-                            productId:0
+                        $project: {
+                            productId: 0
                         }
                     }
                 ]
@@ -58,6 +118,42 @@ export default ({ res, data }: any) => {
                 Api(res, items)
             })
             break;
+        case "deleteItem":
+            console.log(data)
+            update({
+                table,
+                qty: 'updateOne',
+                query: {
+                    _id: data.stashId,
+                    userId: data.userId
+                },
+                update: {
+                    $pull: {
+                        items: {
+                            size: data.size
+                        }
+                    }
+                }
+            }).then(resp => {
+                console.log({ resp })
+                Api(res, { message: "Stash deleted successfully" })
+            }).catch((e) => { console.log(e) })
+            break
+        case 'getStashProduct':
+            console.log(data)
+            find({
+                table: 'Products',
+                qty: 'findOne',
+                query: {
+                    _id: data.productId
+                },
+                project: matchProdProps
+            }).then((prod) => {
+                Api(res, prod)
+            })
+            break;
+        default:
+            break
     }
 
 }

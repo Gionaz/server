@@ -140,7 +140,6 @@ export default async ({ res, data }: any) => {
             }).catch((e) => { console.log(e) })
             break
         case 'getStashProduct':
-            console.log(data)
             find({
                 table: 'Products',
                 qty: 'findOne',

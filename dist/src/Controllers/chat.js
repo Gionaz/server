@@ -191,6 +191,9 @@ exports.default = ({ data, res, clients }) => {
             }).catch(() => {
             });
             break;
+        case 'deleteItem':
+            console.log(data);
+            break;
         default:
             break;
     }

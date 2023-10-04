@@ -7,7 +7,6 @@ export default async ({ res, data }: any) => {
     const { action } = data
     switch (action) {
         case 'addStash':
-            console.log(data)
             const similarStashItem: any = await find({
                 table,
                 qty: 'findOne',
@@ -119,7 +118,6 @@ export default async ({ res, data }: any) => {
             })
             break;
         case "deleteItem":
-            console.log(data)
             update({
                 table,
                 qty: 'updateOne',
@@ -135,7 +133,6 @@ export default async ({ res, data }: any) => {
                     }
                 }
             }).then(resp => {
-                console.log({ resp })
                 Api(res, { message: "Stash deleted successfully" })
             }).catch((e) => { console.log(e) })
             break
@@ -150,6 +147,72 @@ export default async ({ res, data }: any) => {
             }).then((prod) => {
                 Api(res, prod)
             })
+            break;
+        case 'stashSold':
+            const itemExists: any = await find({
+                table,
+                qty: 'findOne',
+                query: {
+                    productId: data.productId,
+                    userId: data.userId,
+                    items: {
+                        $elemMatch: {
+                            size: data.size,
+                            quantity: { $gt: 0 }
+                        }
+                    }
+                },
+                project: {
+                    'items.quantity.$': 1
+                }
+            })
+            if (!itemExists)
+                Api(res, {
+                    error: {
+                        field: 'size', value: "You do not have this item in your stash."
+                    }
+                })
+            else {
+                if (itemExists.items[0].quantity < data.quantity)
+                    Api(res, {
+                        error: {
+                            field: 'quantity', value: "Quantity is larger than what you have in stock record."
+                        }
+                    })
+                else {
+                    update({
+                        table,
+                        qty: 'updateOne',
+                        query: {
+                            productId: data.productId,
+                            userId: data.userId,
+                            items: {
+                                $elemMatch: {
+                                    size: data.size
+                                }
+                            }
+                        },
+                        update: {
+                            $set: {
+                                'items.$.quantity': itemExists.items[0].quantity - data.quantity
+                            }
+                        }
+                    }).then((resp) => {
+                        save({
+                            table: 'StashSells',
+                            data: {
+                                ...data,
+                                stashId: itemExists._id
+                            }
+                        }).then(() => {
+                            Api(res, {
+                                message: "Stash updated successfully."
+                            })
+                        })
+                        //
+                    })
+                }
+            }
             break;
         default:
             break

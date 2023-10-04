@@ -200,7 +200,7 @@ export default async ({ res, data }: any) => {
                             }
                         }
                     }).then((resp) => {
-                        save({
+                        save( {
                             table: 'StashSells',
                             data: {
                                 ...data,

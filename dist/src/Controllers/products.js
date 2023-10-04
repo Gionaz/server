@@ -29,6 +29,7 @@ exports.peerProps = {
     description: 1,
     images: 1
 };
+const table = "Products";
 exports.default = ({ res, data }) => {
     const { action } = data;
     switch (action) {
@@ -175,16 +176,40 @@ exports.default = ({ res, data }) => {
             });
             break;
         case 'searchProduct':
-            console.log(data);
-            (0, database_1.find)({
-                table: 'Products',
-                qty: 'find',
-                query: {
-                    silhoutte: { $regex: data.text }
-                },
-                project: exports.matchProdProps,
-                sort: { _id: -1 },
-                limit: 5
+            (0, database_1.aggregate)({
+                table,
+                array: [
+                    {
+                        $project: exports.matchProdProps,
+                    },
+                    {
+                        $match: {
+                            silhoutte: { $regex: data.text, $options: 'i' }
+                        }
+                    },
+                    {
+                        $sort: {
+                            _id: -1
+                        }
+                    },
+                    {
+                        $group: {
+                            _id: "$silhoutte",
+                            array: { $first: "$$ROOT" },
+                        }
+                    },
+                    {
+                        $limit: 30
+                    },
+                    {
+                        $unwind: '$array',
+                    },
+                    {
+                        $replaceRoot: {
+                            newRoot: '$array',
+                        },
+                    },
+                ]
             }).then((products) => {
                 (0, helper_1.Api)(res, products);
             });

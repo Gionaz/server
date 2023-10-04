@@ -9,7 +9,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const table = 'Stash';
 exports.default = ({ res, data }) => {
     const { action } = data;
-    console.log(data);
+
     switch (action) {
         case 'addStash':
             (0, database_1.save)({

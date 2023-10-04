@@ -194,6 +194,9 @@ export default ({
 
             })
             break;
+            case 'deleteItem':
+                console.log(data)
+                 break;
         default:
             break;
     }

@@ -19,6 +19,7 @@ const products_1 = require("./products");
 const table = 'Stash';
 exports.default = ({ res, data }) => __awaiter(void 0, void 0, void 0, function* () {
     const { action } = data;
+
     switch (action) {
         case 'addStash':
             const similarStashItem = yield (0, database_1.find)({

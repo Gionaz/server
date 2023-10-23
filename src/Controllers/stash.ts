@@ -1,8 +1,10 @@
+
 import { aggregate, find, remove, save, update } from "../database"
 import { Api } from "../helper"
 import mongoose from 'mongoose'
 import { matchProdProps } from "./products"
 const table = 'Stash'
+
 export default async ({ res, data }: any) => {
     const { action } = data
     switch (action) {
